@@ -4,7 +4,6 @@
     "shortName": "katari-ext",
     "website": "https://github.com/katariapp/katari-extensions",
     "artifactBaseUrl": "https://raw.githubusercontent.com/katariapp/katari-extensions/repo",
-    "signingKeyFingerprint": "CD:54:97:FB:59:05:F3:9B:02:33:A1:E6:83:9E:44:CF:FB:69:0F:4E:34:F2:04:6A:39:DC:9B:FF:0D:F0:A4:D2"https://raw.githubusercontent.com/katariapp/katari-extensions/repo/index.json
-
+    "signingKeyFingerprint": "cd5497fb5905f39b0233a1e6839e44cffb690f4e34f2046a39dc9bff0df0a4d2"
   }
 }
