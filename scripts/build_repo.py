@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
+import base64
+import hashlib
 import json
 import os
 import shutil
@@ -172,11 +174,23 @@ def sign_and_align_apk(
 
 
 def extract_fingerprint(build_tools: Path, apk_path: Path) -> str:
-    output = run(str(build_tools / "apksigner"), "verify", "--print-certs", str(apk_path))
-    for line in output.splitlines():
-        if line.strip().startswith("Signer #1 certificate SHA-256 digest:"):
-            return line.split(":", 1)[1].strip().lower()
-    raise SystemExit(f"Could not extract signing fingerprint from {apk_path}")
+    output = run(str(build_tools / "apksigner"), "verify", "--print-certs-pem", str(apk_path))
+    begin_marker = "-----BEGIN CERTIFICATE-----"
+    end_marker = "-----END CERTIFICATE-----"
+    begin = output.find(begin_marker)
+    end = output.find(end_marker, begin + len(begin_marker))
+    if begin == -1 or end == -1:
+        raise SystemExit(f"Could not extract signing certificate from {apk_path}")
+
+    encoded_certificate = "".join(
+        output[begin + len(begin_marker) : end].split(),
+    )
+    try:
+        certificate = base64.b64decode(encoded_certificate, validate=True)
+    except ValueError as error:
+        raise SystemExit(f"Could not decode signing certificate from {apk_path}: {error}") from error
+
+    return hashlib.sha256(certificate).hexdigest()
 
 
 def extension_lib(version_name: str) -> str:
@@ -311,4 +325,3 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     build_repository(parse_args())
-
