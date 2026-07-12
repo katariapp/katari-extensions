@@ -129,7 +129,7 @@ jobs:
           else
             git worktree add --detach .ci/repo
             git -C .ci/repo switch --orphan repo
-            git -C .ci/repo rm -rf .
+            git -C .ci/repo rm -rf --ignore-unmatch .
           fi
 
       - name: Merge changed extensions
