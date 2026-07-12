@@ -19,7 +19,7 @@ Remain in Plan mode when the active surface supports it. Otherwise keep this pha
 6. Verify that every returned `SEntry` sets `type` explicitly and preserves it through details refresh and child retrieval. Do not rely on the current default or assume the configured SDK's `EntryType` and `EntryMedia` variants are permanently exhaustive.
 7. Select source bases by capability: use `EntryHttpSource` for neutral HTTP/catalogue behavior and `EntryImageHttpSource` when the source needs image loading. The same source may return other `EntryMedia` variants. Add optional interfaces only for capabilities the website supports.
 8. For a mixed source, retain a stable per-child media discriminator in the URL or a namespaced persisted `memo` value so `getMedia()` can return the correct media for that child.
-9. Check `REMOVED_SOURCES.md` and the public contribution/legal policies. Stop if the provider was removed or the proposed implementation would require credentials, redistributed site content, access-control bypasses, or code that cannot be published under the repository license.
+9. Check `REMOVED_SOURCES.md`, stop if the provider was removed.
 
 Report the results as a table with these columns:
 
@@ -40,7 +40,6 @@ Proceed only when the thread contains the discovery report, the user explicitly 
 6. Add a sibling `repo-metadata.json`. Make every source's `id`, `lang`, `name`, and `baseUrl` match the factory output.
 7. Fetch the website's actual icon only after approval. Convert it locally without opening or reading the downloaded source icon into the conversation. Create `ic_launcher.png` at 48, 72, 96, 144, and 192 pixels for mdpi through xxxhdpi.
 8. Derive a new extension's version from `katariSourceApiVersion` as `<SDK major>.<SDK minor>.0`; increment only the patch component for later extension releases. Increment `versionCode` for every release. For example, `sdk-2.0.0` produces `2.0.0`.
-9. Do not add publication credentials, signing material, private endpoints, copied catalog/media data, or provider secrets. Ensure all new source files have license-compatible provenance.
 
 ## Validate
 
@@ -48,4 +47,3 @@ Proceed only when the thread contains the discovery report, the user explicitly 
 2. Run `python3 scripts/validate_repo_metadata.py`.
 3. Build the affected module normally against the SDK configured in `gradle.properties`.
 4. Run relevant focused tests and `git diff --check`.
-5. Report website restrictions and environment failures separately from implementation defects.
