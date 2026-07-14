@@ -234,20 +234,22 @@ internal class RezkaSource(
             }
             val chapterNumbers = absoluteEpisodeNumbers(episodes)
 
-            episodes.map { episode ->
-                SEntryChapter.create().apply {
-                    url = buildEpisodeUrl(
-                        videoUrl = entry.url,
-                        seasonId = episode.seasonId,
-                        episodeId = episode.episodeId,
-                    )
-                    name = listOfNotNull(episode.seasonLabel, episode.title)
-                        .joinToString(" - ")
-                        .ifBlank { episode.title }
-                    dateUpload = episode.uploadDate
-                    chapterNumber = chapterNumbers.getValue(episode.sourceIndex)
+            episodes
+                .sortedByDescending { episode -> chapterNumbers.getValue(episode.sourceIndex) }
+                .map { episode ->
+                    SEntryChapter.create().apply {
+                        url = buildEpisodeUrl(
+                            videoUrl = entry.url,
+                            seasonId = episode.seasonId,
+                            episodeId = episode.episodeId,
+                        )
+                        name = listOfNotNull(episode.seasonLabel, episode.title)
+                            .joinToString(" - ")
+                            .ifBlank { episode.title }
+                        dateUpload = episode.uploadDate
+                        chapterNumber = chapterNumbers.getValue(episode.sourceIndex)
+                    }
                 }
-            }
         }
     }
 
