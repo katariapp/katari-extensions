@@ -16,6 +16,10 @@ class GutenbergOpdsTest {
         assertEquals("1342", page.entries[0].ebookId)
         assertEquals("Pride and Prejudice", page.entries[0].title)
         assertEquals("Jane Austen", page.entries[0].author)
+        assertEquals(
+            "https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg",
+            page.entries[0].coverUrl,
+        )
         assertEquals("84", page.entries[1].ebookId)
         assertTrue(page.hasNextPage)
     }

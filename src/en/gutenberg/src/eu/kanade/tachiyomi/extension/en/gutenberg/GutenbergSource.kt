@@ -42,16 +42,20 @@ internal class GutenbergSource : EntryHttpSource() {
     override suspend fun getLatestUpdates(page: Int): EntryPageResult<SEntry> =
         fetchNavigation(page = page, sortOrder = "release_date")
 
-    @Suppress("UNUSED_PARAMETER")
     override suspend fun getSearchContent(
         page: Int,
         query: String,
         filters: EntryFilterList,
-    ): EntryPageResult<SEntry> = fetchNavigation(
-        page = page,
-        sortOrder = null,
-        query = query.trim().ifBlank { null },
-    )
+    ): EntryPageResult<SEntry> {
+        val selection = filters.toGutenbergSearchSelection(query)
+        return fetchNavigation(
+            page = page,
+            sortOrder = selection.sortOrder,
+            query = selection.query,
+        )
+    }
+
+    override fun getFilterList(): EntryFilterList = gutenbergFilterList()
 
     override suspend fun getContentDetails(entry: SEntry): SEntry {
         val publication = publication(entry.ebookId())
@@ -117,6 +121,7 @@ internal class GutenbergSource : EntryHttpSource() {
                     this.url = "/ebooks/${item.ebookId}"
                     title = item.title
                     author = item.author
+                    thumbnailUrl = item.coverUrl
                     status = SEntry.COMPLETED
                     type = EntryType.BOOK
                 }

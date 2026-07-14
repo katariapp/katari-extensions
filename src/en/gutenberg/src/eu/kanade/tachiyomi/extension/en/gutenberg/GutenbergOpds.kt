@@ -16,6 +16,7 @@ internal data class GutenbergNavigationEntry(
     val ebookId: String,
     val title: String,
     val author: String?,
+    val coverUrl: String,
 )
 
 internal data class GutenbergPublication(
@@ -78,6 +79,7 @@ internal object GutenbergOpdsParser {
                 ebookId = ebookId,
                 title = title,
                 author = authors.joinToString().ifBlank { fallbackAuthor },
+                coverUrl = "$baseUrl/cache/epub/$ebookId/pg$ebookId.cover.medium.jpg",
             )
         }
         val hasNextPage = feed.directChildren("link").any { it.attr("rel") == "next" }
