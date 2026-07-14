@@ -14,6 +14,7 @@ import eu.kanade.tachiyomi.source.entry.PlaybackDescriptor
 import eu.kanade.tachiyomi.source.entry.PlaybackSelection
 import eu.kanade.tachiyomi.source.entry.SEntry
 import eu.kanade.tachiyomi.source.entry.SEntryChapter
+import eu.kanade.tachiyomi.source.entry.SourceMetadata
 import eu.kanade.tachiyomi.source.entry.SubtitleSource
 import eu.kanade.tachiyomi.source.entry.VideoPlaybackOption
 import eu.kanade.tachiyomi.source.entry.VideoRequest
@@ -44,11 +45,12 @@ internal class RezkaSource(
     override val name: String,
     private val pathSegment: String,
     private val sourceId: Long,
-) : EntryHttpSource(), SubtitleSource {
+) : EntryHttpSource(), SourceMetadata, SubtitleSource {
 
     override val id: Long = sourceId
     override val lang: String = "ru"
     override val supportsLatest: Boolean = true
+    override val supportedEntryTypes: Set<EntryType> = setOf(EntryType.ANIME)
 
     override val baseUrl = "https://rezka.ag"
     private val sectionPath = when (pathSegment) {
