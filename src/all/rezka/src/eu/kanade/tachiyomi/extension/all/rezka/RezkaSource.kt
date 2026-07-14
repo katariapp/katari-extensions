@@ -167,17 +167,6 @@ internal class RezkaSource(
             val document = response.asJsoup(html)
             val metadata = metadataRowsByLabel(document)
 
-            val activeTranslatorId = document.selectFirst(".b-translator__item.active[data-translator_id]")
-                ?.attr("data-translator_id")
-                ?.trim()
-                ?.toIntOrNull()
-            val translatorIds = document.select("[data-translator_id]")
-                .mapNotNull { it.attr("data-translator_id").trim().toIntOrNull() }
-                .distinct()
-            val translatorId = activeTranslatorId
-                ?: extractInlineInt(html, "initCDN(?:Series|Movies)Events\\((\\d+),\\s*(\\d+)")?.second
-                ?: translatorIds.firstOrNull()
-
             val seasonItems = document.select(".b-simple_season__item[data-tab_id], .b-simple_season__item[data-season_id]")
             val episodeItems = document.select(".b-simple_episode__item[data-episode_id]")
             val scheduleDates = parseScheduledEpisodeDates(document)
@@ -189,7 +178,6 @@ internal class RezkaSource(
                     SEntryChapter.create().apply {
                         url = buildEpisodeUrl(
                             videoUrl = entry.url,
-                            translatorId = translatorId,
                             seasonId = null,
                             episodeId = null,
                         )
@@ -245,7 +233,6 @@ internal class RezkaSource(
                 SEntryChapter.create().apply {
                     url = buildEpisodeUrl(
                         videoUrl = entry.url,
-                        translatorId = translatorId,
                         seasonId = episode.seasonId,
                         episodeId = episode.episodeId,
                     )
@@ -922,12 +909,10 @@ internal class RezkaSource(
 
     private fun buildEpisodeUrl(
         videoUrl: String,
-        translatorId: Int?,
         seasonId: Int?,
         episodeId: Int?,
     ): String {
         val params = buildList {
-            translatorId?.let { add("translator=$it") }
             seasonId?.let { add("season=$it") }
             episodeId?.let { add("episode=$it") }
         }
