@@ -166,10 +166,13 @@ internal class RezkaSource(
             val html = response.body.string()
             val document = response.asJsoup(html)
             val metadata = metadataRowsByLabel(document)
+            val episodeCatalogDocuments = getEpisodeCatalogDocuments(entry.url, document)
+            val episodeCatalog = mergeEpisodeCatalogs(episodeCatalogDocuments)
 
-            val seasonItems = document.select(".b-simple_season__item[data-tab_id], .b-simple_season__item[data-season_id]")
-            val episodeItems = document.select(".b-simple_episode__item[data-episode_id]")
-            val scheduleDates = parseScheduledEpisodeDates(document)
+            val seasonItems = episodeCatalog.seasons
+            val episodeItems = episodeCatalog.episodes
+            val scheduleDates = episodeCatalogDocuments
+                .flatMap(::parseScheduledEpisodeDates)
                 .associate { (it.seasonNumber to it.episodeNumber) to it.airDate }
 
             if (episodeItems.isEmpty()) {
@@ -244,6 +247,19 @@ internal class RezkaSource(
                 }
             }
         }
+    }
+
+    private suspend fun getEpisodeCatalogDocuments(videoUrl: String, currentDocument: Document): List<Document> {
+        val primaryCatalogUrl = primaryTranslatorCatalogUrl(currentDocument, baseUrl)
+            ?: return listOf(currentDocument)
+        if (primaryCatalogUrl == baseUrl + videoUrl) return listOf(currentDocument)
+
+        val primaryDocument = client.newCall(GET(primaryCatalogUrl, headers)).awaitSuccess().use { response ->
+            val html = response.body.string()
+            response.asJsoup(html)
+        }
+
+        return listOf(primaryDocument, currentDocument)
     }
 
     override suspend fun getMedia(
