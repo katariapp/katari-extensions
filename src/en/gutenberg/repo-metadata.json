@@ -1,0 +1,10 @@
+{
+  "sources": [
+    {
+      "id": 500000005,
+      "lang": "en",
+      "name": "Project Gutenberg",
+      "baseUrl": "https://www.gutenberg.org"
+    }
+  ]
+}
