@@ -10,6 +10,7 @@ import eu.kanade.tachiyomi.source.entry.EntryType
 import eu.kanade.tachiyomi.source.entry.PlaybackSelection
 import eu.kanade.tachiyomi.source.entry.SEntry
 import eu.kanade.tachiyomi.source.entry.SEntryChapter
+import eu.kanade.tachiyomi.source.entry.SourceMetadata
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,11 +24,12 @@ import okhttp3.Headers.Companion.toHeaders
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 
-internal class GutenbergSource : EntryHttpSource() {
+internal class GutenbergSource : EntryHttpSource(), SourceMetadata {
     override val id: Long = SOURCE_ID
     override val name: String = "Project Gutenberg"
     override val lang: String = "en"
     override val supportsLatest: Boolean = true
+    override val supportedEntryTypes: Set<EntryType> = setOf(EntryType.BOOK)
     override val baseUrl: String = "https://www.gutenberg.org"
 
     private val publicationCache = PublicationCache()

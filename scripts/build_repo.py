@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "repo-config.json"
 DEFAULT_BUILD_DIR = ROOT / "build" / "repo"
 MODULE_METADATA_GLOB = "src/*/*/repo-metadata.json"
-SUPPORTED_ENTRY_TYPES = {"MANGA", "ANIME"}
+SUPPORTED_ENTRY_TYPES = {"MANGA", "ANIME", "BOOK"}
 
 
 def run(*args: str) -> str:

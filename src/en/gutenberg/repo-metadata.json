@@ -4,7 +4,8 @@
       "id": 500000005,
       "lang": "en",
       "name": "Project Gutenberg",
-      "baseUrl": "https://www.gutenberg.org"
+      "baseUrl": "https://www.gutenberg.org",
+      "supportedEntryTypes": ["BOOK"]
     }
   ]
 }
