@@ -24,8 +24,6 @@ Replace the module path for another extension. Builds resolve the tagged Katari 
 
 The bundled `/develop-extension <website>` command invokes the `extension-development` skill. Its first phase is deliberately read-only: it inspects the configured SDK tag from Katari's public GitHub repository, website capabilities, media behavior, and safe request policy before proposing an implementation. Implementation requires explicit approval after that report.
 
-Generated or AI-assisted changes must be reviewed by the contributor. Do not submit credentials, bypass instructions, copied site content, or code whose license is incompatible with this repository.
-
 ## Pull requests
 
 Pull requests must pass CI and receive approval from a reviewer with write permission. Maintainers may decline extensions that are unsafe, legally unsuitable, unmaintainable, duplicative, or incompatible with Katari's public SDK.

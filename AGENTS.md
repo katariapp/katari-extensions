@@ -6,7 +6,6 @@
 - Every shipped module needs a sibling `repo-metadata.json`. Run `python3 scripts/validate_repo_metadata.py` as the fast metadata preflight.
 - Builds resolve the tagged Katari SDK version in `gradle.properties` from JitPack. Extension development does not require a local Katari checkout.
 - Toolchain versions are pinned in the repository. Java 17 is required.
-- Never commit signing keys, credentials, downloaded copyrighted content, or generated repository artifacts from the `repo` branch to `main`.
 
 ## Extension Structure
 
@@ -18,6 +17,5 @@
 
 ## Public Repository Policy
 
-- Only add sources that are suitable for public distribution and whose implementation can be reviewed in full.
 - Preserve application IDs, signing identity, source IDs, and stored URL identity after publication.
 - Do not restore a source listed in `REMOVED_SOURCES.md`.
