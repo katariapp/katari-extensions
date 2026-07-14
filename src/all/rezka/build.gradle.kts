@@ -11,8 +11,8 @@ configureSharedExtensionModule(project)
 
 android {
     defaultConfig {
-        versionCode = 13
-        versionName = "2.0.3"
+        versionCode = 14
+        versionName = "2.0.4"
         applicationId = "eu.kanade.tachiyomi.extension.all.rezka"
 
         manifestPlaceholders += mapOf(
