@@ -12,7 +12,7 @@ configureSharedExtensionModule(project)
 android {
     defaultConfig {
         versionCode = 1
-        versionName = "2.0.0"
+        versionName = "2.1.0"
         applicationId = "eu.kanade.tachiyomi.extension.en.gutenberg"
 
         manifestPlaceholders += mapOf(
@@ -31,9 +31,7 @@ android {
 }
 
 dependencies {
-    val katariSourceApiVersion = providers.gradleProperty("katariSourceApiVersion")
-        .orElse("local-SNAPSHOT")
-        .get()
+    val katariSourceApiVersion = rootProject.extra["katariSourceApiVersion"] as String
 
     testImplementation("com.github.katariapp.katari:entry-source-api:$katariSourceApiVersion") {
         exclude(group = "com.github.katariapp.katari", module = "core-common")
