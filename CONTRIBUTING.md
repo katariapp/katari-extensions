@@ -8,7 +8,8 @@ Contributions are welcome for existing extensions and, after prior discussion, n
 2. Check `REMOVED_SOURCES.md`. Removed sources may not be reintroduced without explicit maintainer authorization.
 3. Preserve published Android package identity, source IDs, and stored entry/child URLs.
 4. Increase `versionCode` for every extension release and the final component of `versionName` for changes targeting the same Entry API family.
-5. Keep the extension decomposed according to `AGENTS.md`.
+5. Keep each source's optional repository `supportedEntryTypes` metadata aligned with its runtime `SourceMetadata` declaration.
+6. Keep the extension decomposed according to `AGENTS.md`.
 
 ## Validate locally
 

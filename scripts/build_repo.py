@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "repo-config.json"
 DEFAULT_BUILD_DIR = ROOT / "build" / "repo"
 MODULE_METADATA_GLOB = "src/*/*/repo-metadata.json"
+SUPPORTED_ENTRY_TYPES = {"MANGA", "ANIME"}
 
 
 def run(*args: str) -> str:
@@ -45,6 +46,26 @@ def load_module_metadata(metadata_path: Path) -> dict:
         missing = [key for key in ("id", "lang", "name", "baseUrl") if key not in source]
         if missing:
             raise SystemExit(f"Missing {missing} in source #{index} of {metadata_path}")
+
+        entry_types = source.get("supportedEntryTypes")
+        if entry_types is not None:
+            if not isinstance(entry_types, list) or not entry_types:
+                raise SystemExit(
+                    f"supportedEntryTypes must be a non-empty list in source #{index} of {metadata_path}",
+                )
+            if not all(isinstance(entry_type, str) for entry_type in entry_types):
+                raise SystemExit(
+                    f"supportedEntryTypes must contain only strings in source #{index} of {metadata_path}",
+                )
+            unknown_types = sorted(set(entry_types) - SUPPORTED_ENTRY_TYPES)
+            if unknown_types:
+                raise SystemExit(
+                    f"Unknown supportedEntryTypes {unknown_types} in source #{index} of {metadata_path}",
+                )
+            if len(entry_types) != len(set(entry_types)):
+                raise SystemExit(
+                    f"Duplicate supportedEntryTypes in source #{index} of {metadata_path}",
+                )
 
     module_path = metadata_path.parent.relative_to(ROOT).as_posix()
     return {
@@ -198,12 +219,15 @@ def extension_lib(version_name: str) -> str:
 
 
 def source_to_v2(source: dict) -> dict:
-    return {
+    result = {
         "id": source["id"],
         "name": source["name"],
         "language": source["lang"],
         "homeUrl": source["baseUrl"],
     }
+    if "supportedEntryTypes" in source:
+        result["supportedEntryTypes"] = source["supportedEntryTypes"]
+    return result
 
 
 def apk_name_from_item(item: dict) -> str:
