@@ -17,9 +17,10 @@ Remain in Plan mode when the active surface supports it. Otherwise keep this pha
 4. Make the same requests the extension would need for popular content, latest content, search and filters, entry details, children, and media resolution. Probe images, playback streams, subtitles, and applicable optional capabilities exposed by the configured SDK. Include traffic patterns caused by browsing, library updates, and downloads. Do not infer support without request evidence.
 5. Treat the extension, factory, module, and `UnifiedSource` as type-agnostic. For each listing API, identify every content kind, map each item to its `EntryType`, and determine whether one response page can contain mixed types. Do not split sources solely because a website serves multiple content types.
 6. Verify that every returned `SEntry` sets `type` explicitly and preserves it through details refresh and child retrieval. Do not rely on the current default or assume the configured SDK's `EntryType` and `EntryMedia` variants are permanently exhaustive.
-7. Select source bases by capability: use `EntryHttpSource` for neutral HTTP/catalogue behavior and `EntryImageHttpSource` when the source needs image loading. The same source may return other `EntryMedia` variants. Add optional interfaces only for capabilities the website supports.
+7. The same source may return other `EntryMedia` variants. Add optional interfaces only for capabilities the website supports.
 8. For a mixed source, retain a stable per-child media discriminator in the URL or a namespaced persisted `memo` value so `getMedia()` can return the correct media for that child.
 9. Check `REMOVED_SOURCES.md`, stop if the provider was removed.
+10. Do not traverse through unrelated to content pages, such as: About, Privacy Policy, FAQ, Terms of Service, Contact, Profile and so on
 
 Report the results as a table with these columns:
 
