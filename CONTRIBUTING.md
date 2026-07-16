@@ -21,6 +21,20 @@ git diff --check
 
 Replace the module path for another extension. Builds resolve the tagged Katari SDK configured in `gradle.properties` from JitPack; a local Katari checkout is not required.
 
+For coordinated work on an unreleased Katari SDK, first publish the complete SDK from an adjacent Katari checkout:
+
+```bash
+../katari/gradlew --quiet -p ../katari publishEntrySdkToMavenLocal
+```
+
+Then add the repository's single local-development switch to the normal extension task:
+
+```bash
+./gradlew --quiet -PuseMavenLocal=true :src:en:gutenberg:assembleDebug
+```
+
+The switch enables Maven Local and selects `local-SNAPSHOT`; no build file or `gradle.properties` edits are required. Omit it for release validation and confirm the repository has returned to a stable `sdk-*` version before publishing.
+
 ## OpenCode workflow
 
 The bundled `/develop-extension <website>` command invokes the `extension-development` skill. Its first phase is deliberately read-only: it inspects the configured SDK tag from Katari's public GitHub repository, website capabilities, media behavior, and safe request policy before proposing an implementation. Implementation requires explicit approval after that report.

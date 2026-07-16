@@ -27,3 +27,5 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "katari-extensions"
 
 include(":src:all:rezka")
+include(":src:en:gutenberg")
+include(":src:en:novelarrow")

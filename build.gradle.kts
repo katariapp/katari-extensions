@@ -12,10 +12,16 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
 }
 
-val configureSharedExtensionModule = { project: Project ->
-    val katariSourceApiVersion = project.providers.gradleProperty("katariSourceApiVersion")
+val useMavenLocal = providers.gradleProperty("useMavenLocal").orNull?.toBoolean() == true
+val resolvedKatariSourceApiVersion = if (useMavenLocal) {
+    "local-SNAPSHOT"
+} else {
+    providers.gradleProperty("katariSourceApiVersion")
         .orElse("local-SNAPSHOT")
         .get()
+}
+
+val configureSharedExtensionModule = { project: Project ->
     val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     project.extensions.configure<ApplicationExtension> {
@@ -65,9 +71,10 @@ val configureSharedExtensionModule = { project: Project ->
 
     project.dependencies.add(
         "compileOnly",
-        "com.github.katariapp.katari:entry-source-api:$katariSourceApiVersion",
+        "com.github.katariapp.katari:entry-source-api:$resolvedKatariSourceApiVersion",
     )
     project.dependencies.add("compileOnly", libs.findLibrary("jspecify").get().get())
 }
 
 extra["configureSharedExtensionModule"] = configureSharedExtensionModule
+extra["katariSourceApiVersion"] = resolvedKatariSourceApiVersion

@@ -4,7 +4,7 @@
 - The module layout is nonstandard: each module keeps `AndroidManifest.xml` at the module root, Kotlin under `src/`, and resources under `res/`. Do not switch to `src/main`.
 - `extClass` in each manifest must point at the module's `*Factory` class. Factories implement `EntrySourceFactory` and return `UnifiedSource` instances.
 - Every shipped module needs a sibling `repo-metadata.json`. Run `python3 scripts/validate_repo_metadata.py` as the fast metadata preflight.
-- Builds resolve the tagged Katari SDK version in `gradle.properties` from JitPack. Extension development does not require a local Katari checkout.
+- Builds normally resolve the tagged Katari SDK version in `gradle.properties` from JitPack. Coordinated unreleased SDK work uses `-PuseMavenLocal=true`, which selects `local-SNAPSHOT`; otherwise extension development does not require a local Katari checkout.
 - Toolchain versions are pinned in the repository. Java 17 is required.
 
 ## Extension Structure
