@@ -35,9 +35,8 @@ internal class NovelBuddyApi(
         "$API_URL/titles/by-slug/$slug?include=details",
     ).data.title
 
-    suspend fun chapters(titleSlug: String): List<NovelBuddyChapter> {
-        // The chapter endpoint lags the title detail feed and omits recent chapters.
-        val result = title(titleSlug).chapters
+    suspend fun chapters(titleId: String): List<NovelBuddyChapter> {
+        val result = get<NovelBuddyChaptersResponse>("$API_URL/titles/$titleId/chapters").data.chapters
         require(result.size <= MAX_CHAPTERS) { "NovelBuddy returned too many chapters" }
         require(result.distinctBy(NovelBuddyChapter::id).size == result.size) {
             "NovelBuddy returned duplicate chapter identities"

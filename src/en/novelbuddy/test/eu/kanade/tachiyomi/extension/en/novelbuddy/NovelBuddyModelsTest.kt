@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.extension.en.novelbuddy
 
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -17,17 +18,23 @@ class NovelBuddyModelsTest {
     }
 
     @Test
-    fun `title detail retains its complete chapter feed`() {
-        val title = NovelBuddyTitle(
-            id = "WYXwn68O",
-            name = "Eternal Emperor's Path to Ascension",
-            slug = "eternal-emperors-path-to-ascension",
-            chapters = listOf(
-                NovelBuddyChapter("chapter-210", "Chapter 210", "chapter-210"),
-                NovelBuddyChapter("chapter-1", "Chapter 1", "chapter-1"),
-            ),
+    fun `chapter archive response retains every returned chapter`() {
+        val response = json.decodeFromString<NovelBuddyChaptersResponse>(
+            """
+            {
+              "success": true,
+              "data": {
+                "chapters": [
+                  {"id":"chapter-210","name":"Chapter 210","slug":"chapter-210","number":210},
+                  {"id":"chapter-1","name":"Chapter 1","slug":"chapter-1","number":1}
+                ]
+              }
+            }
+            """.trimIndent(),
         )
 
-        assertEquals(listOf("chapter-210", "chapter-1"), title.chapters.map(NovelBuddyChapter::id))
+        assertEquals(listOf("chapter-210", "chapter-1"), response.data.chapters.map(NovelBuddyChapter::id))
     }
 }
+
+private val json = Json { ignoreUnknownKeys = true }

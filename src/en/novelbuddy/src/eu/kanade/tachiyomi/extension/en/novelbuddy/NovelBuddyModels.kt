@@ -24,6 +24,12 @@ internal data class NovelBuddyTitleResponse(val data: NovelBuddyTitleData)
 internal data class NovelBuddyTitleData(val title: NovelBuddyTitle)
 
 @Serializable
+internal data class NovelBuddyChaptersResponse(val data: NovelBuddyChaptersData)
+
+@Serializable
+internal data class NovelBuddyChaptersData(val chapters: List<NovelBuddyChapter>)
+
+@Serializable
 internal data class NovelBuddyChapterResponse(val data: NovelBuddyChapterData)
 
 @Serializable
@@ -39,7 +45,6 @@ internal data class NovelBuddyTitle(
     val status: String? = null,
     val genres: List<NovelBuddyNamedValue> = emptyList(),
     val authors: List<NovelBuddyNamedValue> = emptyList(),
-    val chapters: List<NovelBuddyChapter> = emptyList(),
 )
 
 @Serializable
