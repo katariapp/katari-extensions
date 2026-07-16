@@ -33,6 +33,7 @@ class NovelFullParserTest {
         val document = Jsoup.parse(
             """
             <div id="truyen">
+              <div id="rating" data-novel-id="947"></div>
               <div class="info-holder"><div class="books"><h3 class="title">Novel</h3></div><div class="book"><img src="/cover.jpg"></div><div class="info"><a href="/author/name">Author</a><a href="/genre/Action">Action</a><a href="/status/Ongoing">Ongoing</a></div></div>
               <div class="desc-text"><p>A synopsis.</p></div>
             </div>
@@ -41,6 +42,7 @@ class NovelFullParserTest {
         )
         val result = NovelFullParser.parseDetails(document)
 
+        assertEquals("947", result.novelId)
         assertEquals("Novel", result.title)
         assertEquals("Author", result.author)
         assertEquals(listOf("Action"), result.genres)
@@ -66,11 +68,19 @@ class NovelFullParserTest {
     }
 
     @Test
-    fun `chapter pagination accepts the relative last page URL`() {
+    fun `chapter archive parses every option in source order`() {
         val document = Jsoup.parse(
-            "<div id=\"list-chapter\"></div><ul class=\"pagination\"><li class=\"last\"><a href=\"/novel.html?page=11\">Last</a></li></ul>",
+            """
+            <select class="chapter_jump">
+              <option value="/novel/chapter-1.html">Chapter 1</option>
+              <option value="/novel/chapter-2.html">Chapter 2</option>
+            </select>
+            """.trimIndent(),
         )
 
-        assertEquals(11, NovelFullParser.chapterPageCount(document))
+        val chapters = NovelFullParser.parseChapterArchive(document)
+
+        assertEquals(listOf("/novel/chapter-1.html", "/novel/chapter-2.html"), chapters.map(NovelFullChapter::url))
+        assertEquals(listOf(1, 2), chapters.map(NovelFullChapter::order))
     }
 }

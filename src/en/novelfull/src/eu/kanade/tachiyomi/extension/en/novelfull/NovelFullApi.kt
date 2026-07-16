@@ -16,20 +16,12 @@ internal class NovelFullApi(
         Jsoup.parse(it.body.string(), BASE_URL)
     }
 
-    suspend fun chapters(entryPath: String): List<NovelFullChapter> {
-        val firstPage = document(entryPath)
-        val lastPage = NovelFullParser.chapterPageCount(firstPage)
-        require(lastPage in 1..MAX_CHAPTER_PAGES) { "NovelFull returned too many chapter pages" }
-
-        val chapters = NovelFullParser.parseChapterList(firstPage, offset = 0).toMutableList()
-        for (page in 2..lastPage) {
-            chapters += NovelFullParser.parseChapterList(document(pagePath(entryPath, page)), chapters.size)
-        }
-        require(chapters.distinctBy(NovelFullChapter::url).size == chapters.size) {
-            "NovelFull returned duplicate chapter URLs"
-        }
-        return chapters
-    }
+    suspend fun chapterArchive(novelId: String): Document = document(
+        "$BASE_URL/ajax-chapter-option".toHttpUrl().newBuilder()
+            .addQueryParameter("novelId", novelId)
+            .build()
+            .toString(),
+    )
 
     fun pagePath(path: String, page: Int): String {
         require(page >= 1) { "page must be positive" }
@@ -53,6 +45,5 @@ internal class NovelFullApi(
 
     private companion object {
         const val BASE_URL = "https://novelfull.net"
-        const val MAX_CHAPTER_PAGES = 1_000
     }
 }

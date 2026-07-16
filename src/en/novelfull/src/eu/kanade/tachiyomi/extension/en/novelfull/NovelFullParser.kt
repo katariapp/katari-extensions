@@ -11,6 +11,11 @@ internal object NovelFullParser {
     )
 
     fun parseDetails(document: Document): NovelFullDetails = NovelFullDetails(
+        novelId = document.selectFirst("#rating[data-novel-id]")
+            ?.attr("data-novel-id")
+            ?.trim()
+            ?.ifBlank { null }
+            ?: document.selectFirst("#truyen-id[value]")?.attr("value")?.trim()?.ifBlank { null },
         title = document.selectFirst("#truyen .info-holder .books h3.title")?.text()?.trim()?.ifBlank { null },
         author = document.selectFirst("#truyen .info-holder .info a[href^=/author/]")?.text()?.trim()?.ifBlank { null },
         description = document.selectFirst("#truyen .desc-text")?.text()?.trim()?.ifBlank { null },
@@ -25,21 +30,21 @@ internal object NovelFullParser {
             ?.ifBlank { null },
     )
 
-    fun parseChapterList(document: Document, offset: Int): List<NovelFullChapter> = document
-        .select("#list-chapter .list-chapter > li > a[href]")
+    fun parseChapterArchive(document: Document): List<NovelFullChapter> = document
+        .select("select.chapter_jump > option[value]")
         .mapIndexed { index, link ->
             NovelFullChapter(
-                url = link.attr("href").toEntryPath(),
+                url = link.attr("value").toEntryPath(),
                 name = link.text().trim(),
-                order = offset + index + 1,
+                order = index + 1,
             )
         }
-
-    fun chapterPageCount(document: Document): Int = document
-        .selectFirst("#list-chapter ~ ul.pagination li.last a[href]")
-        ?.attr("href")
-        ?.let { PAGE_QUERY_REGEX.find(it)?.groupValues?.get(1)?.toIntOrNull() }
-        ?: 1
+        .also { chapters ->
+            require(chapters.isNotEmpty()) { "NovelFull returned no chapters" }
+            require(chapters.distinctBy(NovelFullChapter::url).size == chapters.size) {
+                "NovelFull returned duplicate chapter URLs"
+            }
+        }
 
     fun parseChapter(document: Document): NovelFullChapterContent {
         val content = document.selectFirst("#chapter-content")?.clone()
@@ -62,8 +67,6 @@ internal object NovelFullParser {
         )
     }
 }
-
-private val PAGE_QUERY_REGEX = Regex("[?&]page=(\\d+)")
 
 internal data class NovelFullListing(
     val entries: List<NovelFullEntry>,

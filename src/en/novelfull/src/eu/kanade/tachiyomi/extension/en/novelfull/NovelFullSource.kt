@@ -52,8 +52,14 @@ internal class NovelFullSource : EntryHttpSource(), SourceMetadata {
     override suspend fun getContentDetails(entry: SEntry): SEntry =
         NovelFullParser.parseDetails(api.document(entry.url)).applyTo(entry)
 
-    override suspend fun getChapterList(entry: SEntry): List<SEntryChapter> = api.chapters(entry.url)
-        .map(NovelFullChapter::toSEntryChapter)
+    override suspend fun getChapterList(entry: SEntry): List<SEntryChapter> {
+        val novelId = entry.novelFullNovelId() ?: NovelFullParser
+            .parseDetails(api.document(entry.url))
+            .novelId
+            ?: error("NovelFull returned no novel ID")
+        return NovelFullParser.parseChapterArchive(api.chapterArchive(novelId))
+            .map(NovelFullChapter::toSEntryChapter)
+    }
 
     override suspend fun getMedia(chapter: SEntryChapter, selection: PlaybackSelection): EntryMedia {
         val content = NovelFullParser.parseChapter(api.document(chapter.url))

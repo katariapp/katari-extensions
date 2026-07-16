@@ -3,6 +3,10 @@ package eu.kanade.tachiyomi.extension.en.novelfull
 import eu.kanade.tachiyomi.source.entry.EntryType
 import eu.kanade.tachiyomi.source.entry.SEntry
 import eu.kanade.tachiyomi.source.entry.SEntryChapter
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 
 internal data class NovelFullEntry(
     val url: String,
@@ -12,6 +16,7 @@ internal data class NovelFullEntry(
 )
 
 internal data class NovelFullDetails(
+    val novelId: String?,
     val title: String?,
     val author: String?,
     val description: String?,
@@ -41,9 +46,17 @@ internal fun NovelFullDetails.applyTo(entry: SEntry): SEntry = entry.copy().appl
     genre = this@applyTo.genres.takeIf(List<String>::isNotEmpty)
     status = this@applyTo.status.toNovelFullStatus()
     thumbnailUrl = this@applyTo.thumbnailUrl
+    memo = buildJsonObject {
+        entry.memo.forEach { (key, value) -> put(key, value) }
+        this@applyTo.novelId?.let { put(NOVEL_ID_MEMO_KEY, it) }
+    }
     type = EntryType.BOOK
     initialized = true
 }
+
+internal fun SEntry.novelFullNovelId(): String? = memo[NOVEL_ID_MEMO_KEY]
+    ?.jsonPrimitive
+    ?.contentOrNull
 
 internal fun NovelFullChapter.toSEntryChapter(): SEntryChapter = SEntryChapter.create().apply {
     url = this@toSEntryChapter.url
@@ -57,3 +70,5 @@ private fun String?.toNovelFullStatus(): Int = when (this?.lowercase()) {
     "completed", "complete" -> SEntry.COMPLETED
     else -> SEntry.UNKNOWN
 }
+
+private const val NOVEL_ID_MEMO_KEY = "novelfull.novelId"
