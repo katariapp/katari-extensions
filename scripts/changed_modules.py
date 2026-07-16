@@ -49,16 +49,12 @@ def module_path(path: str) -> str | None:
     return None
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--base")
-    parser.add_argument("--head", required=True)
-    parser.add_argument("--github-output", type=Path)
-    args = parser.parse_args()
-
-    modules = all_modules()
-    changes = changed_paths(args.base, args.head)
-    rebuild_all = args.base is None or any(
+def select_modules(
+    modules: dict[str, str],
+    changes: list[tuple[str, str]],
+    missing_base: bool = False,
+) -> tuple[set[str], set[str]]:
+    rebuild_all = missing_base or any(
         path in GLOBAL_FILES or path.startswith(GLOBAL_PREFIXES)
         for status, path in changes
         if status != "D" or not path.startswith("src/")
@@ -76,6 +72,19 @@ def main() -> None:
         and (candidate := module_path(path)) is not None
         and candidate not in modules
     }
+    return selected, deleted
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--base")
+    parser.add_argument("--head", required=True)
+    parser.add_argument("--github-output", type=Path)
+    args = parser.parse_args()
+
+    modules = all_modules()
+    changes = changed_paths(args.base, args.head)
+    selected, deleted = select_modules(modules, changes, missing_base=args.base is None)
 
     matrix = {
         "include": [
@@ -104,4 +113,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

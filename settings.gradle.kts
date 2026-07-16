@@ -26,7 +26,10 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "katari-extensions"
 
-include(":src:all:rezka")
-include(":src:en:gutenberg")
-include(":src:en:novelarrow")
-include(":src:en:novelbuddy")
+file("src")
+    .walkTopDown()
+    .maxDepth(3)
+    .filter { it.name == "build.gradle.kts" }
+    .map { it.parentFile.relativeTo(rootDir).invariantSeparatorsPath }
+    .sorted()
+    .forEach { include(":${it.replace('/', ':')}") }

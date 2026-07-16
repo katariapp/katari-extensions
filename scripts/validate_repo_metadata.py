@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from build_repo import ROOT, load_module_metadata
+from build_repo import ROOT, discover_modules
 
 
 MODULE_BUILD_FILE = "src/*/*/build.gradle.kts"
@@ -23,8 +23,7 @@ def main() -> None:
         orphaned_paths = ", ".join(path.relative_to(ROOT).as_posix() for path in orphaned_metadata)
         raise SystemExit(f"Found repo-metadata.json without build.gradle.kts for module(s): {orphaned_paths}")
 
-    for metadata_dir in sorted(metadata_dirs):
-        load_module_metadata(metadata_dir / "repo-metadata.json")
+    discover_modules()
 
 
 if __name__ == "__main__":

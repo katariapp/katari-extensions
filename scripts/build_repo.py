@@ -76,8 +76,27 @@ def load_module_metadata(metadata_path: Path) -> dict:
     }
 
 
+def validate_unique_slugs(modules: list[dict]) -> None:
+    modules_by_slug: dict[str, list[str]] = {}
+    for module in modules:
+        modules_by_slug.setdefault(module["slug"], []).append(module["path"])
+    duplicate_slugs = {
+        slug: paths
+        for slug, paths in modules_by_slug.items()
+        if len(paths) > 1
+    }
+    if duplicate_slugs:
+        details = "; ".join(
+            f"{slug}: {', '.join(paths)}"
+            for slug, paths in sorted(duplicate_slugs.items())
+        )
+        raise SystemExit(f"Module slugs must be globally unique ({details})")
+
+
 def discover_modules(selected: set[str] | None = None) -> list[dict]:
     modules = [load_module_metadata(path) for path in sorted(ROOT.glob(MODULE_METADATA_GLOB))]
+    validate_unique_slugs(modules)
+
     if selected is not None:
         modules = [module for module in modules if module["path"] in selected]
         found = {module["path"] for module in modules}
