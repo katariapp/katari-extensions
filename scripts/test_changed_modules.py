@@ -2,7 +2,7 @@
 
 import unittest
 
-from build_repo import validate_unique_slugs
+from build_repo import requested_module_paths, validate_unique_slugs
 from changed_modules import select_modules
 
 
@@ -81,6 +81,14 @@ class ValidateUniqueSlugsTest(unittest.TestCase):
                     {"path": "src/es/duplicate", "slug": "duplicate"},
                 ],
             )
+
+
+class RequestedModulePathsTest(unittest.TestCase):
+    def test_defaults_to_all_modules_for_full_local_generation(self) -> None:
+        self.assertIsNone(requested_module_paths([], []))
+
+    def test_selects_no_modules_for_deletion_only_update(self) -> None:
+        self.assertEqual(requested_module_paths([], ["removed"]), set())
 
 
 if __name__ == "__main__":

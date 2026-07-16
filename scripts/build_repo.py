@@ -106,6 +106,10 @@ def discover_modules(selected: set[str] | None = None) -> list[dict]:
     return modules
 
 
+def requested_module_paths(modules: list[str], deleted: list[str]) -> set[str] | None:
+    return set(modules) if modules or deleted else None
+
+
 def latest_build_tools(sdk_root: str) -> Path:
     directory = Path(sdk_root) / "build-tools"
     versions = sorted(path for path in directory.iterdir() if path.is_dir())
@@ -295,7 +299,7 @@ def build_repository(args: argparse.Namespace) -> None:
     apk_dir.mkdir(parents=True, exist_ok=True)
     icon_dir.mkdir(parents=True, exist_ok=True)
 
-    selected = set(args.modules) if args.modules else None
+    selected = requested_module_paths(args.modules, args.delete)
     modules = discover_modules(selected)
     items, existing_fingerprint = load_existing_items(output_dir)
 
