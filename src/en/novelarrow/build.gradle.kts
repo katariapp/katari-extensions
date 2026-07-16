@@ -11,8 +11,8 @@ configureSharedExtensionModule(project)
 
 android {
     defaultConfig {
-        versionCode = 1
-        versionName = "2.1.0"
+        versionCode = 2
+        versionName = "2.1.1"
         applicationId = "eu.kanade.tachiyomi.extension.en.novelarrow"
 
         manifestPlaceholders += mapOf(
@@ -38,5 +38,6 @@ dependencies {
     }
     testImplementation(libs.jsoup)
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.core)
     testImplementation(kotlin("test-junit"))
 }

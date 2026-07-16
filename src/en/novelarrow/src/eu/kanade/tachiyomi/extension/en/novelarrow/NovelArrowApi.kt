@@ -35,23 +35,10 @@ internal class NovelArrowApi(
     ).item.novelInfo
 
     suspend fun chapters(novelId: String): List<NovelArrowChapter> {
-        val chapters = mutableListOf<NovelArrowChapter>()
-        var page = 1
-        var totalPages: Int
-        do {
-            val response = get<NovelArrowChapterPage>(
-                "$BASE_URL/api-web/novels/$novelId/chapters".toHttpUrl().newBuilder()
-                    .addQueryParameter("sort", "asc")
-                    .addQueryParameter("page", page.toString())
-                    .build()
-                    .toString(),
-            )
-            require(response.pagination.page == page) { "NovelArrow returned an unexpected chapter page" }
-            totalPages = response.pagination.totalPages
-            require(totalPages in 0..MAX_CHAPTER_PAGES) { "NovelArrow returned too many chapter pages" }
-            chapters += response.items
-            page++
-        } while (page <= totalPages)
+        val chapters = get<NovelArrowChapterArchive>(
+            novelArrowChapterArchiveUrl(novelId),
+        ).items
+        require(chapters.size <= MAX_CHAPTERS) { "NovelArrow returned too many chapters" }
         require(chapters.distinctBy(NovelArrowChapter::id).size == chapters.size) {
             "NovelArrow returned duplicate chapter identities"
         }
@@ -66,8 +53,15 @@ internal class NovelArrowApi(
     }
 
     private companion object {
-        const val BASE_URL = "https://novelarrow.com"
         const val PAGE_SIZE = 12
-        const val MAX_CHAPTER_PAGES = 1_000
+        const val MAX_CHAPTERS = 20_000
     }
 }
+
+internal fun novelArrowChapterArchiveUrl(novelId: String): String =
+    "$BASE_URL/api-web/novels/$novelId/chapters".toHttpUrl().newBuilder()
+        .addQueryParameter("sort", "asc")
+        .build()
+        .toString()
+
+private const val BASE_URL = "https://novelarrow.com"

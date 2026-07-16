@@ -39,9 +39,8 @@ internal data class NovelArrowNovel(
 )
 
 @Serializable
-internal data class NovelArrowChapterPage(
+internal data class NovelArrowChapterArchive(
     val items: List<NovelArrowChapter>,
-    val pagination: NovelArrowPagination,
 )
 
 @Serializable
