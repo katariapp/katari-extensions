@@ -111,9 +111,7 @@ internal class GutenbergSource : EntryHttpSource(), SourceMetadata {
         require(page >= 1) { "page must be positive" }
         val url = "$baseUrl/ebooks/search.opds/".toHttpUrl().newBuilder().apply {
             sortOrder?.let { addQueryParameter("sort_order", it) }
-            query?.let { addQueryParameter("query", it) }
-            addQueryParameter("languages[]", lang)
-            addQueryParameter("filetype", DISCOVERY_FILE_TYPE)
+            addQueryParameter("query", withGutenbergLanguageScope(query, lang))
             if (page > 1) addQueryParameter("start_index", (((page - 1) * PAGE_SIZE) + 1).toString())
         }.build()
         val parsed = GutenbergOpdsParser.parseNavigation(fetchOpds(url.toString()), baseUrl)
@@ -256,7 +254,6 @@ private fun String.gutenbergId(): String? = Regex("/ebooks/(\\d+)", RegexOption.
 
 private const val SOURCE_ID = 500000005L
 private const val PAGE_SIZE = 25
-private const val DISCOVERY_FILE_TYPE = "epub.noimages"
 private const val OPDS_MEDIA_TYPE = "application/atom+xml;profile=opds-catalog"
 private const val USER_AGENT = "Katari-Gutenberg/1.0 (+https://github.com/katariapp/katari-extensions)"
 private const val CACHE_TTL_MILLIS = 60_000L
